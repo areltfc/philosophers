@@ -14,8 +14,8 @@
 
 void has_eaten(struct philosopher *member)
 {
-	if (pthread_mutex_trylock(member->chopstick) != 0
-	    && member->think_counter < member->sleep_counter) {
+	if (member->think_counter < member->sleep_counter
+	    && pthread_mutex_trylock(member->chopstick) != 0) {
 		member->think(member);
 		pthread_mutex_unlock(member->chopstick);
 	} else
@@ -34,9 +34,9 @@ void has_thought(struct philosopher *member)
 
 void has_slept(struct philosopher *member)
 {
-	if (pthread_mutex_trylock(member->chopstick) != 0
-	    && pthread_mutex_trylock(RIGHT_CHOPSTICK(member)) != 0
-	    && member->eat_counter < member->think_counter) {
+	if (member->eat_counter < member->think_counter
+	    && pthread_mutex_trylock(member->chopstick) != 0
+	    && pthread_mutex_trylock(RIGHT_CHOPSTICK(member)) != 0) {
 		member->eat(member);
 		pthread_mutex_unlock(member->chopstick);
 		pthread_mutex_unlock(RIGHT_CHOPSTICK(member));
