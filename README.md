@@ -16,7 +16,7 @@ $ make fclean
 
 #### How to run philosophers?
 
-You first need to export the needed library used by the program:
+You first need to export the library used by the program:
 ```sh
 $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`/lib
 ```
