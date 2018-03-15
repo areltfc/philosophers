@@ -24,24 +24,25 @@ void has_eaten(struct philosopher *member)
 
 void has_thought(struct philosopher *member)
 {
-	if (pthread_mutex_trylock(member->chopstick) != 0
-	    && pthread_mutex_trylock(RIGHT_CHOPSTICK(member)) != 0) {
-		member->eat(member);
+	if (pthread_mutex_trylock(member->chopstick) != 0) {
+		if (pthread_mutex_trylock(RIGHT_CHOPSTICK(member))) {
+			member->eat(member);
+			pthread_mutex_unlock(RIGHT_CHOPSTICK(member));
+		}
 		pthread_mutex_unlock(member->chopstick);
-		pthread_mutex_unlock(RIGHT_CHOPSTICK(member));
 	}
 }
 
 void has_slept(struct philosopher *member)
 {
-	if (member->eat_counter < member->think_counter
-	    && pthread_mutex_trylock(member->chopstick) != 0
-	    && pthread_mutex_trylock(RIGHT_CHOPSTICK(member)) != 0) {
-		member->eat(member);
-		pthread_mutex_unlock(member->chopstick);
-		pthread_mutex_unlock(RIGHT_CHOPSTICK(member));
-	} else if (pthread_mutex_trylock(member->chopstick) != 0) {
-		member->think(member);
+	if (pthread_mutex_trylock(member->chopstick) != 0) {
+		if (member->eat_counter < member->think_counter
+		    && pthread_mutex_trylock(RIGHT_CHOPSTICK(member)) != 0) {
+			member->eat(member);
+			pthread_mutex_unlock(RIGHT_CHOPSTICK(member));
+		} else {
+			member->think(member);
+		}
 		pthread_mutex_unlock(member->chopstick);
 	}
 }
